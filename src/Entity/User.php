@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -29,26 +30,34 @@ class User
     private $lastname;
 
     /**
+     * @Assert\Email()
      * @ORM\Column(type="string", length=255)
      */
     private $email;
 
     /**
+     * @Assert\Length(min=8)
+     * @Assert\Regex(
+     *     pattern="/\d+/",
+     *     match=true,
+     *     message="Your password must contain a number"
+     * )
      * @ORM\Column(type="string", length=255)
      */
     private $password;
 
-    public function __construct($firstname = null, $lastname = null, $email = null, $password = null)
-    {
-        $this->firstname = $firstname;
-        $this->lastname = $lastname;
-        $this->email = $email;
-        $this->password = $password;
-    }
-
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * @Assert\IsTrue(message="Your password should not contain your mail")
+     * 
+     */
+
+    public function isValidPassword(){
+        return (false === strpos($this->password, $this->email));
     }
 
     public function getFirstname(): ?string

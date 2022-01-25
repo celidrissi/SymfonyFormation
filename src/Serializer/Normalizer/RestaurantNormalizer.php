@@ -19,6 +19,7 @@ class RestaurantrNormalizer implements ContextAwareNormalizerInterface
 
     public function normalize($restaurant, string $format = null, array $context = [])
     {
+        
         // ->normalize can return an Object or the value returned by the CIRCULAR_REFERENCE_HANDLER. Both should be handled
         $restaurantArray = $this->normalizer->normalize($restaurant, $format, $context);
         if (!is_array($restaurantArray)) {

@@ -8,7 +8,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use App\Entity\User;
+use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * POST /users // add a new user
@@ -18,20 +21,43 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
 class UserController extends AbstractController
 {
+    private $validator;
+    private $entityManager;
+
+    public function __construct(ValidatorInterface $validator, EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+        $this->validator = $validator;
+    }
+
+    /**
+     * @Route("", name="getUsers", methods="GET")
+     */
+    public function getUsers(UserRepository $userRepository): Response
+    {
+        return $this->json($userRepository->findAll(), 200, []);
+    }
+
     /**
      * @Route("", name="create", methods="POST")
      */
-    public function create(Request $request, SerializerInterface $serializer): Response // AKA index
+    public function create(Request $request, SerializerInterface $serializer): Response
     {
         $newUserInfo = $request->getContent();
 
         /** var User */
         $user = $serializer->deserialize($newUserInfo, User::class, "json");
 
-        // TODO : Insert in database
-        dump($user);
+        if ($errors =  $this->runValidation($user)){
+            return $errors;
+        }
 
-        return $this->json($user, 201);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush($user);
+
+        dump($user, $newUserInfo);
+
+        return $this->json($user, 200);
     }
 
     /**
@@ -39,18 +65,32 @@ class UserController extends AbstractController
      * 
      * @return void
      */
-    public function update($id, Request $request, SerializerInterface $serializer)
+    public function update($id, Request $request, SerializerInterface $serializer, UserRepository $userRepository)
     {
         $newUserInfo = $request->getContent();
 
-        $myUser = new User('Chafik', 'El idrissi', 'chafik.elidrissi@outlook.fr', 'MachinBidule');
+        $myUser = $userRepository->findOneById($id);
+
         /** var User */
         $user = $serializer->deserialize($newUserInfo, User::class, "json", [AbstractNormalizer::OBJECT_TO_POPULATE => $myUser]);
 
+        if ($errors = $this->runValidation($user)) {
+            return $errors;
+        };
 
-        // TODO : Insert in database
-        dump($user);
+        dump($user, $myUser);
+        
+        $this->entityManager->flush($user);
 
         return $this->json($user, 200);
+    }
+
+    public function runValidation(object $object)
+    {
+        $errors = $this->validator->validate($object);
+
+        if (count($errors) > 0){
+            return $this->json($errors, 422);
+        }
     }
 }
