@@ -8,4 +8,14 @@ use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 class Kernel extends BaseKernel
 {
     use MicroKernelTrait;
+
+    public function getCacheDir(): string
+    {
+        return "/tmp/cache/".$this->environment;
+    }
+
+    public function getlogDir(): string
+    {
+        return "/tmp/log";
+    }
 }
