@@ -46,7 +46,7 @@ class Restaurant
      */
     private $address;
 
-    public function __construct($id, $name, $likes, $dislikes)
+    public function __construct($id = 0, $name, $likes, $dislikes)
     {
         $this->id = $id;
         $this->name = $name;
@@ -114,7 +114,7 @@ class Restaurant
     }
 
     public function getMapUrl(){
-        return "https://maps.googleapis.com/maps/api/staticmap?center=".$this->getAddress()."&zoom=14&size=350x250&markers=".$this->getAddress()."&key=".$_ENV["MAPS_APIKEY"];
+        return "https://maps.googleapis.com/maps/api/staticmap?center=".$this->getAddress()."&zoom=14&size=350x250&markers=".$this->getAddress()."&key=".$_ENV["GOOGLE_API_KEY"];
     }
 
     public function getDirectionUrl()

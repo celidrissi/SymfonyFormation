@@ -8,7 +8,7 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\ContextAwareNormalizerInterface;
 
-class RestaurantrNormalizer implements ContextAwareNormalizerInterface
+class RestaurantNormalizer implements ContextAwareNormalizerInterface
 {
     private $normalizer;
 
@@ -19,7 +19,6 @@ class RestaurantrNormalizer implements ContextAwareNormalizerInterface
 
     public function normalize($restaurant, string $format = null, array $context = [])
     {
-        
         // ->normalize can return an Object or the value returned by the CIRCULAR_REFERENCE_HANDLER. Both should be handled
         $restaurantArray = $this->normalizer->normalize($restaurant, $format, $context);
         if (!is_array($restaurantArray)) {
@@ -30,8 +29,11 @@ class RestaurantrNormalizer implements ContextAwareNormalizerInterface
         if (isset($context["action"]) && in_array("list", $context["action"])) {
             // Option1 : Only display id, name when listing mode used
             return [
-                $restaurantArray["id"],
-                $restaurantArray["name"]
+                "id" => $restaurantArray["id"],
+                "name" =>$restaurantArray["name"],
+                "likes" => $restaurantArray["likes"],
+                "dislikes" => $restaurantArray["dislikes"],
+                "address" => $restaurantArray["address"],
             ];
 
             // Option 2: Remove properties you do not want.

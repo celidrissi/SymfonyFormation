@@ -17,6 +17,12 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  * POST /users // add a new user
  *
  * @Route("/users", name="users", defaults={"_format"="json"})
+ * 
+ * user : 
+ * GET /users/{id} //show
+ * GET /users //listing
+ * POST /users //add new user
+ * POST /login 
 */
 
 class UserController extends AbstractController
@@ -87,9 +93,11 @@ class UserController extends AbstractController
 
     public function runValidation(object $object)
     {
+        // Validate the object with doctrine annotations inside the Entity
         $errors = $this->validator->validate($object);
 
         if (count($errors) > 0){
+            // Unprocessable Entity
             return $this->json($errors, 422);
         }
     }

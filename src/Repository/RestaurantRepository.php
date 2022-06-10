@@ -12,12 +12,43 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Restaurant[]    findAll()
  * @method Restaurant[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class RestaurantRepository extends ServiceEntityRepository
+class RestaurantRepository extends ServiceEntityRepository implements RestaurantRepositoryInterface
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, $symfonyEnv)
     {
         parent::__construct($registry, Restaurant::class);
     }
+
+    public function findAll()
+    {
+        return parent::findAll();
+    }
+
+    public function findOneById($id)
+    {
+        return parent::findOneBy(['id' => $id]);
+    }
+
+    public function findOneByName($name)
+    {
+        return parent::findOneBy(['name' => $name]);
+    }
+    
+    public function findOneByAddress($address)
+    {
+        return parent::findOneBy(['address' => $address]);
+    }
+
+    public function findOneByLikes($likes)
+    {
+        return parent::findOneBy(['likes' => $likes]);
+    }
+
+    public function findOneByDislikes($dislikes)
+    {
+        return parent::findOneBy(['dislikes' => $dislikes]);
+    }
+    
 
     // /**
     //  * @return Restaurant[] Returns an array of Restaurant objects

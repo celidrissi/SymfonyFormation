@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Repository\InMemoryRestaurantRepository;
+use App\Repository\RestaurantRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,20 +16,16 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
  * POST /restaurants
  * PATCH /restaurants/{id}/upvote|downvote
  * 
- * user : 
- * POST /users //add new user
- * POST /login 
  */
 
 class RestaurantController extends AbstractController
 {
-    private InMemoryRestaurantRepository $restaurantRepository;
+    private RestaurantRepositoryInterface $restaurantRepository;
 
-    public function __construct(InMemoryRestaurantRepository $restaurantRepository)
+    public function __construct(RestaurantRepositoryInterface $restaurantRepository)
     {
         $this->restaurantRepository = $restaurantRepository;
     }
-
     /**
      * @Route("/restaurants", name="restaurants")
      */
